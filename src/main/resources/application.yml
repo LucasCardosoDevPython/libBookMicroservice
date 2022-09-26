@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:oracle:thin:@localhost:1521/XEPDB1
-    username: libOnboardingV2
+    username: libOnboardingV2Book
     password: 1234
   jpa:
     database-platform: org.hibernate.dialect.Oracle10gDialect
