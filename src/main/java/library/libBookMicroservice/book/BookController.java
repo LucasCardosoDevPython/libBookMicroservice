@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,11 @@ public class BookController {
     @GetMapping("/{isbn}")
     public BookDTO findBookById(@PathVariable("isbn") String isbn){
         return service.findBookById(isbn);
+    }
+
+    @GetMapping("/price_finder/{isbn}")
+    public double findBookPrice(@RequestParam("isbn") String isbn){
+        return service.findBookByPrice(isbn);
     }
 
     @GetMapping("/price/{price}")

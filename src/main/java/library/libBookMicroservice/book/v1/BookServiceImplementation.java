@@ -45,8 +45,8 @@ public class BookServiceImplementation implements BookService{
     private Book fromBookDTO(BookDTO dto){
         LinkedList<Category> categories = new LinkedList<Category>();
 
-        for(CategoryDTO c: dto.getCategories()){
-            categories.add(this.fromCategoryDTO(c));
+        for(String c: dto.getCategories()){
+            categories.add(this.fromCategoryDTO(new CategoryDTO(c)));
         }
 
         return Book.builder()
@@ -62,10 +62,10 @@ public class BookServiceImplementation implements BookService{
     }
 
     private BookDTO toBookDTO(Book book){
-        LinkedList<CategoryDTO> categories = new LinkedList<CategoryDTO>();
+        LinkedList<String> categories = new LinkedList<String>();
 
         for(Category c: book.getCategories()){
-            categories.add(this.toCategoryDTO(c));
+            categories.add(c.getName());
         }
 
         return BookDTO.builder()
@@ -169,8 +169,9 @@ public class BookServiceImplementation implements BookService{
                 );
 
         for(CategoryDTO c: categories){
-            if(!book.getCategories().contains(c)){
-                book.addCategory(this.fromCategoryDTO(c));
+            Category category = this.fromCategoryDTO(c);
+            if(!book.getCategories().contains(category)){
+                book.addCategory(category);
             }
         }
 
@@ -190,6 +191,11 @@ public class BookServiceImplementation implements BookService{
                         HttpStatus.NOT_FOUND,
                         "Não foi encontrado nehnum livro com o isbn " + isbn + " na base de dados."
                 ));
+    }
+
+    @Override
+    public double findBookByPrice(String isbn) {
+        return this.findBookById(isbn).getPrice();
     }
 }
 

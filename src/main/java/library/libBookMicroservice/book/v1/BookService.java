@@ -18,4 +18,5 @@ interface BookService {
     void delete(String isbn);
     void addCategory(String isbn, List<CategoryDTO> categories);
     void update(String isbn, BookDTO book);
+    double findBookByPrice(String isbn);
 }
