@@ -1,6 +1,8 @@
 server:
   port: 8082
 spring:
+  application:
+    name: bookMicroservice
   datasource:
     url: jdbc:oracle:thin:@localhost:1521/XEPDB1
     username: libOnboardingBook
@@ -19,3 +21,8 @@ flyway:
   enabled: true
   out-of-order: true
   locations: classpath:db/migration/oracle
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka
