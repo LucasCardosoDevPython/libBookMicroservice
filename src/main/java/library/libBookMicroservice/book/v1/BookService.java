@@ -9,7 +9,7 @@ import java.util.List;
 interface BookService {
     List<BookDTO> findAllBooks();
     BookDTO findBookById(String isbn);
-    List<BookDTO> findByPriceGreaterThenEqual(double price);
+    List<BookDTO> findByPrice(double price);
     List<BookDTO> findByPriceBetween(double high, double low);
     List<BookDTO> findByAuthorContaining(String name);
     List<BookDTO> findByTitleContaining(String title);

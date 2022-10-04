@@ -11,8 +11,8 @@ public interface BookRepository extends JpaRepository<Book, String> {
     Set<Book> findByTitle(String title);
     Set<Book> findByAuthorContaining(String author);
 
-    @Query(value = "select * from book where price >= :price",nativeQuery = true)
-    Set<Book> findByPriceGreaterThenEqual(@Param("price") double price);
+    @Query(value = "select * from book where price <= :price",nativeQuery = true)
+    Set<Book> findByPrice(@Param("price") double price);
     Set<Book> findByPriceBetween(double low, double high);
     Set<Book> findByTitleContaining(String title);
 

@@ -109,8 +109,8 @@ public class BookServiceImplementation implements BookService{
 
     @Override
     @Transactional
-    public List<BookDTO> findByPriceGreaterThenEqual(double price) {
-        return this.books2DTOs(books.findByPriceGreaterThenEqual(price));
+    public List<BookDTO> findByPrice(double price) {
+        return this.books2DTOs(books.findByPrice(price));
     }
 
     @Override

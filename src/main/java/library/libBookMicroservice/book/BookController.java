@@ -40,13 +40,13 @@ public class BookController {
     }
 
     @GetMapping("/price/{price}")
-    public List<BookDTO> findByPriceGreaterThenEqual(@PathVariable("price") double price){
-        return service.findByPriceGreaterThenEqual(price);
+    public List<BookDTO> findByPrice(@PathVariable("price") double price){
+        return service.findByPrice(price);
     }
 
     @GetMapping("/price/{low}/{high}")
-    public List<BookDTO> findByPriceBetween(@PathVariable("high") double high, @PathVariable("low") double low){
-        return service.findByPriceBetween(high, low);
+    public List<BookDTO> findByPriceBetween(@PathVariable("low") double low, @PathVariable("high") double high){
+        return service.findByPriceBetween(low, high);
     }
 
     @GetMapping("/author/{name}")
