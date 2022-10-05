@@ -109,8 +109,14 @@ public class BookServiceImplementation implements BookService{
 
     @Override
     @Transactional
-    public List<BookDTO> findByPrice(double price) {
-        return this.books2DTOs(books.findByPrice(price));
+    public List<BookDTO> findByPriceLowerThen(double price) {
+        return this.books2DTOs(books.findByPriceLowerThen(price));
+    }
+
+    @Override
+    @Transactional
+    public List<BookDTO> findByPriceGreaterThen(double price) {
+        return this.books2DTOs(books.findByPriceGreaterThen(price));
     }
 
     @Override
@@ -179,13 +185,43 @@ public class BookServiceImplementation implements BookService{
     }
 
     @Override
+    public void removeCategory(String isbn, List<CategoryDTO> categories) {
+        Book book = books.findById(isbn)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Não foi encontrado nehnum livro com o isbn " + isbn + " na base de dados.")
+                );
+
+        for(CategoryDTO c: categories){
+            Category category = this.fromCategoryDTO(c);
+            if(book.getCategories().contains(category)){
+                book.removeCategory(category);
+            }else{
+                books.save(book);
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "O livro " + book.getTitle() + " não possue a categoria " + c.getName());
+            }
+        }
+
+        books.save(book);
+
+    }
+
+    @Override
     @Transactional
-    public void update(String isbn, BookDTO book) {
+    public void update(String isbn, BookDTO bookDTO) {
         books
                 .findById(isbn)
                 .map(existentBook -> {
-                    book.setIsbn(existentBook.getIsbn());
-                    books.save(this.fromBookDTO(book));
+                    bookDTO.setIsbn(existentBook.getIsbn());
+                    Book book = this.fromBookDTO(bookDTO);
+                    LinkedList<Category> newCategoryList = new LinkedList<Category>();
+                    for(String c: bookDTO.getCategories()){
+                        newCategoryList.add(this.findCategoryByName(c));
+                    }
+                    book.setCategories(newCategoryList);
+                    books.save(book);
                     return existentBook;
                 }).orElseThrow(()-> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,

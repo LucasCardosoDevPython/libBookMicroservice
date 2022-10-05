@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/book")
@@ -39,14 +41,23 @@ public class BookController {
         return service.findBookByPrice(isbn);
     }
 
-    @GetMapping("/price/{price}")
-    public List<BookDTO> findByPrice(@PathVariable("price") double price){
-        return service.findByPrice(price);
-    }
+    @GetMapping("/price")
+    public List<BookDTO> findByPrice(
+            @RequestParam Optional<Double> low,
+            @RequestParam Optional<Double> high){
+        if(low.isEmpty() && high.isPresent()){
+            return service.findByPriceLowerThen(high.get());
+        } else if (low.isPresent() && high.isEmpty()) {
+            return service.findByPriceGreaterThen(low.get());
+        } else if (low.isPresent() && high.isPresent()) {
+            return service.findByPriceBetween(low.get(), high.get());
+        } else {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Ao menos um dos limites deve estar presente"
+            );
+        }
 
-    @GetMapping("/price/{low}/{high}")
-    public List<BookDTO> findByPriceBetween(@PathVariable("low") double low, @PathVariable("high") double high){
-        return service.findByPriceBetween(low, high);
     }
 
     @GetMapping("/author/{name}")
@@ -80,6 +91,12 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void addCategory(@PathVariable("isbn") String isbn, @RequestBody List<CategoryDTO> categories){
         service.addCategory(isbn, categories);
+    }
+
+    @DeleteMapping("/categories/{isbn}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeCategory(@PathVariable("isbn") String isbn, @RequestBody List<CategoryDTO> categories){
+        service.removeCategory(isbn, categories);
     }
 
     @PutMapping("/{isbn}")

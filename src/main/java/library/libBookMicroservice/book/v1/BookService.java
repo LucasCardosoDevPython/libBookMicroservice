@@ -9,7 +9,8 @@ import java.util.List;
 interface BookService {
     List<BookDTO> findAllBooks();
     BookDTO findBookById(String isbn);
-    List<BookDTO> findByPrice(double price);
+    List<BookDTO> findByPriceLowerThen(double price);
+    List<BookDTO> findByPriceGreaterThen(double price);
     List<BookDTO> findByPriceBetween(double high, double low);
     List<BookDTO> findByAuthorContaining(String name);
     List<BookDTO> findByTitleContaining(String title);
@@ -17,6 +18,7 @@ interface BookService {
     Book save(BookDTO book);
     void delete(String isbn);
     void addCategory(String isbn, List<CategoryDTO> categories);
+    void removeCategory(String isbn, List<CategoryDTO> categories);
     void update(String isbn, BookDTO book);
     double findBookByPrice(String isbn);
 }
