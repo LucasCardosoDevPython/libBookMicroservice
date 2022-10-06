@@ -3,6 +3,7 @@ package library.libBookMicroservice.book;
 import library.libBookMicroservice.book.v1.BookServiceImplementation;
 import library.libBookMicroservice.category.CategoryDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,11 +25,23 @@ import java.util.Optional;
 @AllArgsConstructor
 public class BookController {
 
+    private static final int PAGE_SIZE_DEFAULT = 5;
+
     private BookServiceImplementation service;
 
+    @GetMapping("/verify/{isbn}")
+    public boolean isPresent(@PathVariable("isbn") String isbn){
+        return service.isPresent(isbn);
+    }
+
     @GetMapping
-    public List<BookDTO> findAllBooks(){
-        return service.findAllBooks();
+    public Page<BookDTO> findAllBooks(
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<Integer> size){
+        return service.findAllBooks(
+                page.orElseGet(() -> 0),
+                size.orElseGet(() -> PAGE_SIZE_DEFAULT)
+        );
     }
 
     @GetMapping("/{isbn}")
@@ -42,15 +55,23 @@ public class BookController {
     }
 
     @GetMapping("/price")
-    public List<BookDTO> findByPrice(
+    public Page<BookDTO> findByPrice(
             @RequestParam Optional<Double> low,
-            @RequestParam Optional<Double> high){
+            @RequestParam Optional<Double> high,
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<Integer> size){
         if(low.isEmpty() && high.isPresent()){
-            return service.findByPriceLowerThen(high.get());
+            return service.findByPriceLowerThen(high.get(),
+                    page.orElseGet(() -> 0),
+                    size.orElseGet(() -> PAGE_SIZE_DEFAULT));
         } else if (low.isPresent() && high.isEmpty()) {
-            return service.findByPriceGreaterThen(low.get());
+            return service.findByPriceGreaterThen(low.get(),
+                    page.orElseGet(() -> 0),
+                    size.orElseGet(() -> PAGE_SIZE_DEFAULT));
         } else if (low.isPresent() && high.isPresent()) {
-            return service.findByPriceBetween(low.get(), high.get());
+            return service.findByPriceBetween(low.get(), high.get(),
+                    page.orElseGet(() -> 0),
+                    size.orElseGet(() -> PAGE_SIZE_DEFAULT));
         } else {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
@@ -61,18 +82,30 @@ public class BookController {
     }
 
     @GetMapping("/author/{name}")
-    public List<BookDTO> findByAuthorContaining(@PathVariable("name") String name){
-        return service.findByAuthorContaining(name);
+    public Page<BookDTO> findByAuthorContaining(@PathVariable("name") String name,
+                                                @RequestParam Optional<Integer> page,
+                                                @RequestParam Optional<Integer> size){
+        return service.findByAuthorContaining(name,
+                page.orElseGet(() -> 0),
+                size.orElseGet(() -> PAGE_SIZE_DEFAULT));
     }
 
     @GetMapping("/title/{title}")
-    public List<BookDTO> findByTitleContaining(@PathVariable("title") String title){
-        return service.findByTitleContaining(title);
+    public Page<BookDTO> findByTitleContaining(@PathVariable("title") String title,
+                                               @RequestParam Optional<Integer> page,
+                                               @RequestParam Optional<Integer> size){
+        return service.findByTitleContaining(title,
+                page.orElseGet(() -> 0),
+                size.orElseGet(() -> PAGE_SIZE_DEFAULT));
     }
 
     @GetMapping("/Category/{name}")
-    public List<BookDTO> findByCategory(@PathVariable("name") String categoryName){
-        return service.findByCategory(categoryName);
+    public Page<BookDTO> findByCategory(@PathVariable("name") String categoryName,
+                                        @RequestParam Optional<Integer> page,
+                                        @RequestParam Optional<Integer> size){
+        return service.findByCategory(categoryName,
+                page.orElseGet(() -> 0),
+                size.orElseGet(() -> PAGE_SIZE_DEFAULT));
     }
 
     @PostMapping

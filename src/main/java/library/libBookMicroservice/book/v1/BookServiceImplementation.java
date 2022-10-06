@@ -6,7 +6,12 @@ import library.libBookMicroservice.book.BookRepository;
 import library.libBookMicroservice.category.Category;
 import library.libBookMicroservice.category.CategoryDTO;
 import library.libBookMicroservice.category.CategoryRepository;
+
 import lombok.AllArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,8 +97,13 @@ public class BookServiceImplementation implements BookService{
 
     @Override
     @Transactional
-    public List<BookDTO> findAllBooks() {
-        return this.books2DTOs(books.findAll());
+    public Page<BookDTO> findAllBooks(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(
+            page,
+            size);
+        return new PageImpl<>(
+                this.books2DTOs(books.findAll()),
+                pageRequest, size);
     }
 
     @Override
@@ -109,40 +119,70 @@ public class BookServiceImplementation implements BookService{
 
     @Override
     @Transactional
-    public List<BookDTO> findByPriceLowerThen(double price) {
-        return this.books2DTOs(books.findByPriceLowerThen(price));
+    public Page<BookDTO> findByPriceLowerThen(double price, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size);
+        return new PageImpl<>(
+                this.books2DTOs(books.findByPriceLowerThen(price)),
+                pageRequest, size);
     }
 
     @Override
     @Transactional
-    public List<BookDTO> findByPriceGreaterThen(double price) {
-        return this.books2DTOs(books.findByPriceGreaterThen(price));
+    public Page<BookDTO> findByPriceGreaterThen(double price, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size);
+        return new PageImpl<>(
+                this.books2DTOs(books.findByPriceGreaterThen(price)),
+                pageRequest, size);
     }
 
     @Override
     @Transactional
-    public List<BookDTO> findByPriceBetween(double high, double low) {
-        return this.books2DTOs(books.findByPriceBetween(high, low));
+    public Page<BookDTO> findByPriceBetween(double high, double low, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size);
+        return new PageImpl<>(
+                this.books2DTOs(books.findByPriceBetween(high, low)),
+                pageRequest, size);
     }
 
     @Override
     @Transactional
-    public List<BookDTO> findByAuthorContaining(String name) {
-        return this.books2DTOs(books.findByAuthorContaining(name));
+    public Page<BookDTO> findByAuthorContaining(String name, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size);
+        return new PageImpl<>(
+                this.books2DTOs(books.findByAuthorContaining(name)),
+                pageRequest, size);
     }
 
     @Override
     @Transactional
-    public List<BookDTO> findByTitleContaining(String title) {
-        return this.books2DTOs(books.findByTitleContaining(title));
+    public Page<BookDTO> findByTitleContaining(String title, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size);
+        return new PageImpl<>(
+                this.books2DTOs(books.findByTitleContaining(title)),
+                pageRequest, size);
     }
 
     @Override
     @Transactional
-    public List<BookDTO> findByCategory(String categoryName) {
-        return this.books2DTOs(
-                books.findByCategory(this.findCategoryByName(categoryName).getId())
-        );
+    public Page<BookDTO> findByCategory(String categoryName, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(
+                page,
+                size);
+        return new PageImpl<>(
+                this.books2DTOs(
+                        books.findByCategory(this.findCategoryByName(categoryName).getId())
+                ),
+                pageRequest, size);
     }
 
     @Override
@@ -232,6 +272,11 @@ public class BookServiceImplementation implements BookService{
     @Override
     public double findBookByPrice(String isbn) {
         return this.findBookById(isbn).getPrice();
+    }
+
+    @Override
+    public boolean isPresent(String isbn) {
+        return books.findById(isbn).isPresent();
     }
 }
 
