@@ -1,23 +1,21 @@
 package library.libBookMicroservice.book;
 
-import library.libBookMicroservice.category.CategoryDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
-import java.util.Set;
-
 public interface BookRepository extends JpaRepository<Book, String> {
 
-    Set<Book> findByAuthorContaining(String author);
+    Page<Book> findByAuthorContaining(String author, Pageable pageable);
     @Query(value = "select * from book where price <= :price", nativeQuery = true)
-    Set<Book> findByPriceLowerThen(@Param("price") double price);
-    Set<Book> findByPriceBetween(double low, double high);
+    Page<Book> findByPriceLowerThen(@Param("price") double price, Pageable pageable);
+    Page<Book> findByPriceBetween(double low, double high,  Pageable pageable);
     @Query(value = "select * from book where price >= :price", nativeQuery = true)
-    Set<Book> findByPriceGreaterThen(@Param("price") double price);
-    Set<Book> findByTitleContaining(String title);
+    Page<Book> findByPriceGreaterThen(@Param("price") double price, Pageable pageable);
+    Page<Book> findByTitleContaining(String title,  Pageable pageable);
     @Query(value = "select * from book where id in (select book_id from book_category where category_id = :categoryId)", nativeQuery = true)
-    Set<Book> findByCategory(@Param("categoryId") Integer categoryId);
+    Page<Book> findByCategory(@Param("categoryId") Integer categoryId, Pageable pageable);
 }
 

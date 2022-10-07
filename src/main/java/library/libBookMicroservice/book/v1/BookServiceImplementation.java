@@ -10,14 +10,12 @@ import library.libBookMicroservice.category.CategoryRepository;
 import lombok.AllArgsConstructor;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,12 +33,6 @@ public class BookServiceImplementation implements BookService{
                         HttpStatus.NOT_FOUND,
                         "Não foi encontrada nehnuma categoria " + name + " na base de dados."
                 ));
-    }
-
-    private CategoryDTO toCategoryDTO(Category category){
-        return CategoryDTO.builder()
-                .name(category.getName())
-                .build();
     }
 
     private Category fromCategoryDTO(CategoryDTO dto){
@@ -66,7 +58,7 @@ public class BookServiceImplementation implements BookService{
                 .build();
     }
 
-    private BookDTO toBookDTO(Book book){
+    private static BookDTO toBookDTO(Book book){
         LinkedList<String> categories = new LinkedList<String>();
 
         for(Category c: book.getCategories()){
@@ -85,25 +77,14 @@ public class BookServiceImplementation implements BookService{
                 .build();
     }
 
-    private List<BookDTO> books2DTOs(Collection<Book> bookList){
-        LinkedList<BookDTO> all = new LinkedList<BookDTO>();
-
-        for(Book b: bookList){
-            all.add(this.toBookDTO(b));
-        }
-
-        return all;
+    private Page<BookDTO> fromPage(Page<Book> page){
+        return page.map(BookServiceImplementation::toBookDTO);
     }
 
     @Override
     @Transactional
-    public Page<BookDTO> findAllBooks(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-            page,
-            size);
-        return new PageImpl<>(
-                this.books2DTOs(books.findAll()),
-                pageRequest, size);
+    public Page<BookDTO> findAllBooks(Pageable pageable) {
+        return this.fromPage(books.findAll(pageable));
     }
 
     @Override
@@ -119,70 +100,43 @@ public class BookServiceImplementation implements BookService{
 
     @Override
     @Transactional
-    public Page<BookDTO> findByPriceLowerThen(double price, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size);
-        return new PageImpl<>(
-                this.books2DTOs(books.findByPriceLowerThen(price)),
-                pageRequest, size);
+    public Page<BookDTO> findByPriceLowerThen(double price, Pageable pageable) {
+        return this.fromPage(books.findByPriceLowerThen(price, pageable));
     }
 
     @Override
     @Transactional
-    public Page<BookDTO> findByPriceGreaterThen(double price, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size);
-        return new PageImpl<>(
-                this.books2DTOs(books.findByPriceGreaterThen(price)),
-                pageRequest, size);
+    public Page<BookDTO> findByPriceGreaterThen(double price, Pageable pageable) {
+        return this.fromPage(books.findByPriceGreaterThen(price, pageable));
     }
 
     @Override
     @Transactional
-    public Page<BookDTO> findByPriceBetween(double high, double low, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size);
-        return new PageImpl<>(
-                this.books2DTOs(books.findByPriceBetween(high, low)),
-                pageRequest, size);
+    public Page<BookDTO> findByPriceBetween(double high, double low, Pageable pageable) {
+        return this.fromPage(books.findByPriceBetween(high, low, pageable));
     }
 
     @Override
     @Transactional
-    public Page<BookDTO> findByAuthorContaining(String name, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size);
-        return new PageImpl<>(
-                this.books2DTOs(books.findByAuthorContaining(name)),
-                pageRequest, size);
+    public Page<BookDTO> findByAuthorContaining(String name, Pageable pageable) {
+        return this.fromPage(books.findByAuthorContaining(name, pageable));
     }
 
     @Override
     @Transactional
-    public Page<BookDTO> findByTitleContaining(String title, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size);
-        return new PageImpl<>(
-                this.books2DTOs(books.findByTitleContaining(title)),
-                pageRequest, size);
+    public Page<BookDTO> findByTitleContaining(String title, Pageable pageable) {
+        return this.fromPage(books.findByTitleContaining(title, pageable));
     }
 
     @Override
     @Transactional
-    public Page<BookDTO> findByCategory(String categoryName, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(
-                page,
-                size);
-        return new PageImpl<>(
-                this.books2DTOs(
-                        books.findByCategory(this.findCategoryByName(categoryName).getId())
-                ),
-                pageRequest, size);
+    public Page<BookDTO> findByCategory(String categoryName, Pageable pageable) {
+        return this.fromPage(
+                        books.findByCategory(
+                                this.findCategoryByName(categoryName).getId(),
+                                pageable
+                        )
+                );
     }
 
     @Override
