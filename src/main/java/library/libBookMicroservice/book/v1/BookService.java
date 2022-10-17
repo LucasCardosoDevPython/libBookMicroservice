@@ -12,8 +12,8 @@ import java.util.List;
 interface BookService {
     Page<BookDTO> findAllBooks(Pageable pageable);
     BookDTO findBookById(String isbn);
-    Page<BookDTO> findByPriceLowerThen(double price, Pageable pageable);
-    Page<BookDTO> findByPriceGreaterThen(double price, Pageable pageable);
+    Page<BookDTO> findByPriceLessThan(double price, Pageable pageable);
+    Page<BookDTO> findByPriceGreaterThan(double price, Pageable pageable);
     Page<BookDTO> findByPriceBetween(double high, double low, Pageable pageable);
     Page<BookDTO> findByAuthorContaining(String name, Pageable pageable);
     Page<BookDTO> findByTitleContaining(String title, Pageable pageable);

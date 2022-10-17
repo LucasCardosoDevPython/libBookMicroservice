@@ -1,6 +1,5 @@
 package library.libBookMicroservice.book;
 
-import library.libBookMicroservice.category.CategoryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

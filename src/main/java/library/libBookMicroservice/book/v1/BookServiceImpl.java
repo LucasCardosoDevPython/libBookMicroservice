@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class BookServiceImplementation implements BookService{
+public class BookServiceImpl implements BookService{
 
     private BookRepository books;
     private CategoryRepository categories;
@@ -78,7 +78,7 @@ public class BookServiceImplementation implements BookService{
     }
 
     private Page<BookDTO> fromPage(Page<Book> page){
-        return page.map(BookServiceImplementation::toBookDTO);
+        return page.map(BookServiceImpl::toBookDTO);
     }
 
     @Override
@@ -100,14 +100,14 @@ public class BookServiceImplementation implements BookService{
 
     @Override
     @Transactional
-    public Page<BookDTO> findByPriceLowerThen(double price, Pageable pageable) {
-        return this.fromPage(books.findByPriceLowerThen(price, pageable));
+    public Page<BookDTO> findByPriceLessThan(double price, Pageable pageable) {
+        return this.fromPage(books.findByPriceLessThan(price, pageable));
     }
 
     @Override
     @Transactional
-    public Page<BookDTO> findByPriceGreaterThen(double price, Pageable pageable) {
-        return this.fromPage(books.findByPriceGreaterThen(price, pageable));
+    public Page<BookDTO> findByPriceGreaterThan(double price, Pageable pageable) {
+        return this.fromPage(books.findByPriceGreaterThan(price, pageable));
     }
 
     @Override
@@ -131,12 +131,9 @@ public class BookServiceImplementation implements BookService{
     @Override
     @Transactional
     public Page<BookDTO> findByCategory(String categoryName, Pageable pageable) {
-        return this.fromPage(
-                        books.findByCategory(
-                                this.findCategoryByName(categoryName).getId(),
-                                pageable
-                        )
-                );
+        return fromPage(
+                books.findByCategoriesId(this.findCategoryByName(categoryName).getId(), pageable)
+        );
     }
 
     @Override

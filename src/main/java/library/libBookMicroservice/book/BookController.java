@@ -1,6 +1,6 @@
 package library.libBookMicroservice.book;
 
-import library.libBookMicroservice.book.v1.BookServiceImplementation;
+import library.libBookMicroservice.book.v1.BookServiceImpl;
 import library.libBookMicroservice.category.CategoryDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +26,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class BookController {
 
-    private BookServiceImplementation service;
+    private BookServiceImpl service;
 
     @GetMapping("/verify/{isbn}")
     public boolean isPresent(@PathVariable("isbn") String isbn){
@@ -53,9 +53,9 @@ public class BookController {
             @RequestParam Optional<Double> low,
             @RequestParam Optional<Double> high){
         if(low.isEmpty() && high.isPresent()){
-            return service.findByPriceLowerThen(high.get(), pageable);
+            return service.findByPriceLessThan(high.get(), pageable);
         } else if (low.isPresent() && high.isEmpty()) {
-            return service.findByPriceGreaterThen(low.get(), pageable);
+            return service.findByPriceGreaterThan(low.get(), pageable);
         } else if (low.isPresent() && high.isPresent()) {
             return service.findByPriceBetween(low.get(), high.get(), pageable);
         } else {
@@ -77,7 +77,7 @@ public class BookController {
         return service.findByTitleContaining(title, pageable);
     }
 
-    @GetMapping("/Category/{name}")
+    @GetMapping("/category/{name}")
     public Page<BookDTO> findByCategory(@PathVariable("name") String categoryName, Pageable pageable){
         return service.findByCategory(categoryName, pageable);
     }
