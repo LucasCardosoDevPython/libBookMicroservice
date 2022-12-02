@@ -38,12 +38,18 @@ public class BookServiceImpl implements BookService{
     private Category fromCategoryDTO(CategoryDTO dto){
         return this.findCategoryByName(dto.getName());
     }
+    private static CategoryDTO toCategoryDTO(Category category){
+        return CategoryDTO.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .build();
+    }
 
     private Book fromBookDTO(BookDTO dto){
         LinkedList<Category> categories = new LinkedList<Category>();
 
-        for(String c: dto.getCategories()){
-            categories.add(this.fromCategoryDTO(new CategoryDTO(c)));
+        for(CategoryDTO c: dto.getCategories()){
+            categories.add(this.fromCategoryDTO(c));
         }
 
         return Book.builder()
@@ -59,10 +65,10 @@ public class BookServiceImpl implements BookService{
     }
 
     private static BookDTO toBookDTO(Book book){
-        LinkedList<String> categories = new LinkedList<String>();
+        LinkedList<CategoryDTO> categories = new LinkedList<CategoryDTO>();
 
         for(Category c: book.getCategories()){
-            categories.add(c.getName());
+            categories.add(toCategoryDTO(c));
         }
 
         return BookDTO.builder()
@@ -208,8 +214,8 @@ public class BookServiceImpl implements BookService{
                     bookDTO.setIsbn(existentBook.getIsbn());
                     Book book = this.fromBookDTO(bookDTO);
                     LinkedList<Category> newCategoryList = new LinkedList<Category>();
-                    for(String c: bookDTO.getCategories()){
-                        newCategoryList.add(this.findCategoryByName(c));
+                    for(CategoryDTO c: bookDTO.getCategories()){
+                        newCategoryList.add(fromCategoryDTO(c));
                     }
                     book.setCategories(newCategoryList);
                     books.save(book);
@@ -228,6 +234,15 @@ public class BookServiceImpl implements BookService{
     @Override
     public boolean isPresent(String isbn) {
         return books.findById(isbn).isPresent();
+    }
+
+    @Override
+    public List<CategoryDTO> getAllCategories() {
+        LinkedList<CategoryDTO> categoryList = new LinkedList<>();
+        for(Category c: this.categories.findAll()){
+            categoryList.add(this.toCategoryDTO(c));
+        }
+        return categoryList;
     }
 }
 

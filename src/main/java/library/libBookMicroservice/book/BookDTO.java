@@ -1,5 +1,6 @@
 package library.libBookMicroservice.book;
 
+import library.libBookMicroservice.category.CategoryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +20,5 @@ public class BookDTO {
     private Integer year;
     private Double price;
     private Integer stock;
-    private List<String> categories;
+    private List<CategoryDTO> categories;
 }

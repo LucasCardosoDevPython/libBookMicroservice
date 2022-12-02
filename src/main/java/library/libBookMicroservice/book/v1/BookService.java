@@ -25,4 +25,5 @@ interface BookService {
     void update(String isbn, BookDTO book);
     double findBookByPrice(String isbn);
     boolean isPresent(String isbn);
+    List<CategoryDTO> getAllCategories();
 }
